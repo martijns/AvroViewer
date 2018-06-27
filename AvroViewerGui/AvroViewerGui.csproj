@@ -29,7 +29,7 @@
     <PublisherName>Tikkie</PublisherName>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>58</ApplicationRevision>
+    <ApplicationRevision>59</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
@@ -70,16 +70,10 @@
     <ManifestCertificateThumbprint>EDB501EE2E946250AF0FDDF2260AFB75F3345A6E</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile>martijn_stolk_codesigning.pfx</AssemblyOriginatorKeyFile>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>appicon.ico</ApplicationIcon>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ManifestKeyFile>martijn_stolk_codesigning.pfx</ManifestKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
@@ -87,30 +81,6 @@
     </Reference>
     <Reference Include="Microsoft.Avro.Core, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Avro.Core.0.1.0\lib\net451\Microsoft.Avro.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Azure.KeyVault.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Azure.KeyVault.Core.1.0.0\lib\net40\Microsoft.Azure.KeyVault.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.Data.Edm, Version=5.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Data.Edm.5.7.0\lib\net40\Microsoft.Data.Edm.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.Data.OData, Version=5.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Data.OData.5.7.0\lib\net40\Microsoft.Data.OData.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.Data.Services.Client, Version=5.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Data.Services.Client.5.7.0\lib\net40\Microsoft.Data.Services.Client.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.WindowsAzure.Configuration, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.WindowsAzure.ConfigurationManager.3.2.0\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.WindowsAzure.Storage, Version=6.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\WindowsAzure.Storage.6.2.0\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -120,10 +90,6 @@
     <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Spatial, Version=5.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Spatial.5.7.0\lib\net40\System.Spatial.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.Windows.Forms.DataVisualization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -183,10 +149,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Ms.Azure.Logging.Fetcher\Ms.Azure.Logging.Fetcher.csproj">
-      <Project>{552e0640-57cf-4be8-8168-f4a8fed14e01}</Project>
-      <Name>Ms.Azure.Logging.Fetcher</Name>
-    </ProjectReference>
     <ProjectReference Include="..\MsCommon.ClickOnce\MsCommon.ClickOnce.csproj">
       <Project>{28aff2bb-79a2-46a2-9ef0-202b188aa028}</Project>
       <Name>MsCommon.ClickOnce</Name>
@@ -243,4 +205,20 @@ ECHO ########################
   <Target Name="AfterBuild">
   </Target>
   -->
+  <!-- Martijn Stolk - Custom target to sign the assembly after compile -->
+  <Target Name="MySigning" AfterTargets="AfterCompile" Condition="Exists('martijn_stolk_codesigning.pfx')">
+    <PropertyGroup>
+      <WindowsSdkDir Condition="'$(WindowsSdkDir)'==''">C:\Program Files (x86)\Windows Kits\10\</WindowsSdkDir>
+      <SignToolPath Condition=" Exists('$(WindowsSDK80Path)bin\x86\signtool.exe') and '$(SignToolPath)'=='' and '$(PROCESSOR_ARCHITECTURE)'=='x86' ">$(WindowsSDK80Path)bin\x86\signtool.exe</SignToolPath>
+      <SignToolPath Condition=" Exists('$(WindowsSDK80Path)bin\x64\signtool.exe') and '$(SignToolPath)'=='' and '$(PROCESSOR_ARCHITECTURE)'=='AMD64' ">$(WindowsSDK80Path)bin\x64\signtool.exe</SignToolPath>
+      <SignToolPath Condition=" Exists('$(WindowsSdkDir)\bin\x86\signtool.exe') and '$(SignToolPath)'=='' and '$(PROCESSOR_ARCHITECTURE)'=='x86' ">$(WindowsSdkDir)\bin\x86\signtool.exe</SignToolPath>
+      <SignToolPath Condition=" Exists('$(WindowsSdkDir)\bin\x64\signtool.exe') and '$(SignToolPath)'=='' and '$(PROCESSOR_ARCHITECTURE)'=='AMD64' ">$(WindowsSdkDir)\bin\x64\signtool.exe</SignToolPath>
+      <SignToolPath Condition=" Exists('$(WindowsSdkDir)\bin\10.0.17134.0\x86\signtool.exe') and '$(SignToolPath)'=='' and '$(PROCESSOR_ARCHITECTURE)'=='x86' ">$(WindowsSdkDir)\bin\10.0.17134.0\x86\signtool.exe</SignToolPath>
+      <SignToolPath Condition=" Exists('$(WindowsSdkDir)\bin\10.0.17134.0\x64\signtool.exe') and '$(SignToolPath)'=='' and '$(PROCESSOR_ARCHITECTURE)'=='AMD64' ">$(WindowsSdkDir)\bin\10.0.17134.0\x64\signtool.exe</SignToolPath>
+    </PropertyGroup>
+    <Message Text="Signing assembly post-compile..." />
+    <!-- On AfterCompile we need to sign the executable that is in the obj/ dir, not the bin/ dir -->
+    <Exec Condition="Exists('$(ProjectDir)obj\$(PlatformName)\$(ConfigurationName)\$(TargetFileName)')" Command="&quot;$(SignToolPath)&quot; sign /i &quot;StartCom&quot; /n &quot;Martijn Stolk&quot;  /v &quot;$(ProjectDir)obj\$(PlatformName)\$(ConfigurationName)\$(TargetFileName)&quot;" />
+    <Exec Condition="Exists('$(ProjectDir)obj\$(ConfigurationName)\$(TargetFileName)')" Command="&quot;$(SignToolPath)&quot; sign /i &quot;StartCom&quot; /n &quot;Martijn Stolk&quot;  /v &quot;$(ProjectDir)obj\$(ConfigurationName)\$(TargetFileName)&quot;" />
+  </Target>
 </Project>
