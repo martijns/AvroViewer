@@ -563,6 +563,10 @@ namespace AvroViewerGui
         private void HandleFormClosed(object sender, FormClosedEventArgs e)
         {
             // Make sure the process actually terminates, and no background processes keep the application alive.
+            // Kinda dirty. We do this as a precaution when bad programming causes another dialog to be left open, which
+            // would result in the application not actually closing.
+            Hide();
+            Application.DoEvents();
             Environment.Exit(0);
         }
 
