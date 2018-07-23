@@ -311,6 +311,16 @@ namespace AvroViewerGui
             {
                 ShowDataGridView();
                 statusStrip1.Visible = false;
+
+                // Dirty fix to get the horizontal scrollbar active after loading a file.
+                Task.Factory.StartNew(async () =>
+                {
+                    Invoke(new Action(() => {
+                        Width += 1;
+                        Width -= 1;
+                    }), null);
+                    
+                });
             });
         }
 

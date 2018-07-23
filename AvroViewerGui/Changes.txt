@@ -1,2 +1,5 @@
-﻿2018-06-26:
+﻿2018-07-23:
+- Fix horizontal scrollbar being disabled after loading a file
+
+2018-06-26:
 - Initial version
