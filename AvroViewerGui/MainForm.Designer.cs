@@ -40,10 +40,13 @@
             this.filterTextBox = new System.Windows.Forms.TextBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.exportToCsvToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportSelectionToCsvToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyAllToClipboardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copySelectionToClipboardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.changelogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -52,10 +55,7 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.lblStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripSplitButton1 = new System.Windows.Forms.ToolStripSplitButton();
-            this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.ctxMenuPopup.SuspendLayout();
             this.mainPanel.SuspendLayout();
             this.resultPanel.SuspendLayout();
@@ -184,6 +184,18 @@
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
             // 
+            // openToolStripMenuItem
+            // 
+            this.openToolStripMenuItem.Name = "openToolStripMenuItem";
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
+            this.openToolStripMenuItem.Text = "Open...";
+            this.openToolStripMenuItem.Click += new System.EventHandler(this.HandleOpenClicked);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(219, 6);
+            // 
             // exportToCsvToolStripMenuItem
             // 
             this.exportToCsvToolStripMenuItem.Name = "exportToCsvToolStripMenuItem";
@@ -212,6 +224,11 @@
             this.copySelectionToClipboardToolStripMenuItem.Text = "Copy Selection to Clipboard";
             this.copySelectionToClipboardToolStripMenuItem.Click += new System.EventHandler(this.copySelectionToClipboardToolStripMenuItem_Click);
             // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(219, 6);
+            // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
@@ -232,21 +249,21 @@
             // changelogToolStripMenuItem
             // 
             this.changelogToolStripMenuItem.Name = "changelogToolStripMenuItem";
-            this.changelogToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.changelogToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
             this.changelogToolStripMenuItem.Text = "Changelog...";
             this.changelogToolStripMenuItem.Click += new System.EventHandler(this.HandleChangelogClicked);
             // 
             // submitFeedbackToolStripMenuItem
             // 
             this.submitFeedbackToolStripMenuItem.Name = "submitFeedbackToolStripMenuItem";
-            this.submitFeedbackToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.submitFeedbackToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
             this.submitFeedbackToolStripMenuItem.Text = "Submit feedback...";
             this.submitFeedbackToolStripMenuItem.Click += new System.EventHandler(this.HandleSubmitFeedbackClicked);
             // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
             this.aboutToolStripMenuItem.Text = "About...";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.HandleAboutClick);
             // 
@@ -257,7 +274,7 @@
             this.toolStripSplitButton1});
             this.statusStrip1.Location = new System.Drawing.Point(0, 373);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(1627, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(1143, 22);
             this.statusStrip1.TabIndex = 2;
             this.statusStrip1.Tag = "KEEP_ENABLED";
             this.statusStrip1.Text = "statusStrip1";
@@ -275,28 +292,11 @@
             this.toolStripSplitButton1.Image = global::AvroViewerGui.Properties.Resources.corssbtn;
             this.toolStripSplitButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripSplitButton1.Name = "toolStripSplitButton1";
-            this.toolStripSplitButton1.Size = new System.Drawing.Size(58, 20);
+            this.toolStripSplitButton1.Size = new System.Drawing.Size(95, 20);
             this.toolStripSplitButton1.Tag = "KEEP_ENABLED";
-            this.toolStripSplitButton1.Text = "Abort";
-            this.toolStripSplitButton1.ToolTipText = "Abort";
+            this.toolStripSplitButton1.Text = "Stop loading";
+            this.toolStripSplitButton1.ToolTipText = "Stop loading";
             this.toolStripSplitButton1.ButtonClick += new System.EventHandler(this.HandleAbortClicked);
-            // 
-            // openToolStripMenuItem
-            // 
-            this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
-            this.openToolStripMenuItem.Text = "Open...";
-            this.openToolStripMenuItem.Click += new System.EventHandler(this.HandleOpenClicked);
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(219, 6);
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(219, 6);
             // 
             // MainForm
             // 

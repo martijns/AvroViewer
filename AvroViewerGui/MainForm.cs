@@ -27,12 +27,14 @@ namespace AvroViewerGui
         private string[][] _filteredRows = null;
         private string _initialFilename = null;
 
+        private bool _abortClicked = false;
+
         private Timer delayedFilterTextChangedTimer;
 
         public MainForm(string filename = null)
         {
             InitializeComponent();
-            Text += " " + Version;
+            Text = AppVersion.AppName + " " + Version;
             dataGridView1.ClipboardCopyMode = DataGridViewClipboardCopyMode.EnableWithAutoHeaderText;
             dataGridView1.MultiSelect = true;
             dataGridView1.CellDoubleClick += HandleCellDoubleClick;
@@ -210,11 +212,10 @@ namespace AvroViewerGui
         public IList<Entity> GetEntities(string filename)
         {
             var entities = new List<Entity>();
-            UpdateStatus("Loading...");
-
-            using (var readstream = File.OpenRead(filename))
+            using (var readstream = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             using (var reader = AvroContainer.CreateGenericReader(readstream))
             {
+                int counter = 1;
                 while (reader.MoveNext())
                 {
                     string[] fields = new string[0];
@@ -225,57 +226,104 @@ namespace AvroViewerGui
 
                     foreach (var record in reader.Current.Objects.OfType<AvroRecord>())
                     {
+                        if (_abortClicked)
+                            return entities;
+
                         Entity ent = new Entity();
-                        foreach (var field in fields)
-                        {
-                            object dataobj = record.GetField<object>(field);
-                            if (dataobj is string str)
-                            {
-                                ent.Properties.Add(field, str);
-                            }
-                            else if (dataobj is byte[] data)
-                            {
-                                ent.Properties.Add(field, Encoding.UTF8.GetString(data));
-                            }
-                            else if (dataobj is Dictionary<string,string> dictstr)
-                            {
-                                foreach (var kvp in dictstr)
-                                {
-                                    ent.Properties.Add(field + "." + kvp.Key, kvp.Value);
-                                }
-                            }
-                            else if (dataobj is Dictionary<string, object> dictobj)
-                            {
-                                foreach (var kvp in dictobj)
-                                {
-                                    ent.Properties.Add(field + "." + kvp.Key, kvp.Value?.ToString() ?? "null");
-                                }
-                            }
-                            else
-                            {
-                                ent.Properties.Add(field, dataobj?.ToString() ?? "null");
-                            }
-                        }
+                        ent.LineNumber = counter++;
+
+                        ReadAvroRecord(record, ent, null);
 
                         entities.Add(ent);
                     }
                 }
             }
-
-            UpdateStatus("Done");
             return entities;
+        }
+
+        private void ReadAvroRecord(AvroRecord record, Entity ent, string prefix)
+        {
+            var fields = record.Schema.Fields.Select(f => f.FullName).ToArray();
+            foreach (var field in fields)
+            {
+                object dataobj = record.GetField<object>(field);
+                if (dataobj == null)
+                {
+                    ent.Properties.Add(GetFieldName(field, prefix), "null");
+                }
+                else if (dataobj is string str)
+                {
+                    ent.Properties.Add(GetFieldName(field, prefix), str);
+                }
+                else if (dataobj is byte[] data)
+                {
+                    ent.Properties.Add(GetFieldName(field, prefix), Encoding.UTF8.GetString(data));
+                }
+                else if (dataobj is Dictionary<string, string> dictstr)
+                {
+                    foreach (var kvp in dictstr)
+                    {
+                        ent.Properties.Add(GetFieldName(field, prefix) + "." + kvp.Key, kvp.Value);
+                    }
+                }
+                else if (dataobj is Dictionary<string, object> dictobj)
+                {
+                    foreach (var kvp in dictobj)
+                    {
+                        if (kvp.Value is AvroRecord avrorecord)
+                        {
+                            ReadAvroRecord(avrorecord, ent, GetFieldName(field, prefix) + "." + kvp.Key);
+                        }
+                        else
+                        {
+                            ent.Properties.Add(GetFieldName(field, prefix) + "." + kvp.Key, kvp.Value?.ToString() ?? "null");
+                        }
+                    }
+                }
+                else if (dataobj is AvroRecord avrorecord)
+                {
+                    ReadAvroRecord(avrorecord, ent, GetFieldName(field, prefix));
+                }
+                else if (!dataobj.GetType().IsPrimitive)
+                {
+                    try
+                    {
+                        var jsonstr = JsonConvert.SerializeObject(dataobj);
+                        ent.Properties.Add(GetFieldName(field, prefix), jsonstr ?? "null");
+                    }
+                    catch (Exception)
+                    {
+                        ent.Properties.Add(GetFieldName(field, prefix), "Could not create json representation for: " + dataobj?.ToString() ?? "null");
+                    }
+                }
+                else
+                {
+                    ent.Properties.Add(GetFieldName(field, prefix), dataobj?.ToString() ?? "null");
+                }
+            }
+        }
+
+        private string GetFieldName(string fieldname, string prefix)
+        {
+            if (prefix == null)
+                return fieldname;
+            return prefix + "." + fieldname;
         }
 
         public void HandleAbortClicked(object sender, EventArgs e)
         {
-            MessageBox.Show("Psych! This does nothing.");
+            _abortClicked = true;
         }
 
         private void LoadFromFile(string filename)
         {
             statusStrip1.Visible = true;
+            Text = AppVersion.AppName + " " + Version + " - " + Path.GetFileName(filename);
             PerformWork(() =>
             {
+                // Load from file
+                UpdateStatus("Loading...");
+                _abortClicked = false;
                 var entities = GetEntities(filename);
 
                 // If there are no entities at all, add a dummy "no results" entity
@@ -290,10 +338,10 @@ namespace AvroViewerGui
                     });
                 }
 
-                // Add indexes
-                var index = 0;
-                foreach (var item in entities)
-                    item.LineNumber = index++;
+                if (_abortClicked)
+                    UpdateStatus("Interrupted, processing what was read so far...");
+                else
+                    UpdateStatus("Processing...");
 
                 // Determine the available property names by checking each entity
                 string[] propertyNames = entities.SelectMany(entity => entity.Properties).Select(p => p.Key).Distinct().ToArray();
@@ -305,10 +353,11 @@ namespace AvroViewerGui
                         .ToArray())
                     .ToArray();
                 _filteredRows = _loadedRows;
-
             },
             () =>
             {
+                UpdateStatus("Rendering table...");
+                Application.DoEvents();
                 ShowDataGridView();
                 statusStrip1.Visible = false;
 
@@ -336,12 +385,14 @@ namespace AvroViewerGui
 
         private void ShowDataGridView()
         {
+            // Make sure our datagrid is added (in case we switched to graph)
             if (!resultPanel.Contains(dataGridView1))
             {
                 resultPanel.Controls.Clear();
                 resultPanel.Controls.Add(dataGridView1);
             }
 
+            // Setup our datagrid to our liking
             dataGridView1.ReadOnly = true;
             if (!dataGridView1.VirtualMode)
             {
@@ -354,41 +405,32 @@ namespace AvroViewerGui
             dataGridView1.AllowUserToResizeColumns = true; // Resizen mag wel
             dataGridView1.AllowUserToResizeRows = false;
             dataGridView1.AllowUserToOrderColumns = false;
+            dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
             dataGridView1.Columns.Clear();
             dataGridView1.Rows.Clear();
-            foreach (var column in _loadedColumns)
+
+            // Create columns and determine width of each column
+            using (var gfx = dataGridView1.CreateGraphics())
             {
-                dataGridView1.Columns.Add(column, column);
+                for (int i=0; i < _loadedColumns.Length; i++)
+                {
+                    var columnname = _loadedColumns[i];
+                    var longestcontent = (from item in _loadedRows select i < item.Length ? item[i] : "").Aggregate("", (max, cur) => max.Length > cur.Length ? max : cur);
+                    var colWidth = gfx.MeasureString(longestcontent, dataGridView1.Font);
+
+                    var size = (int) Math.Ceiling(colWidth.Width);
+                    size += 20;
+                    var dgvc = new DataGridViewTextBoxColumn
+                    {
+                        FillWeight = 0.00001f,
+                        Name = columnname,
+                        HeaderText = columnname,
+                        Width = size,
+                        MinimumWidth = size
+                    };
+                    dataGridView1.Columns.Add(dgvc);
+                }
             }
-
-            // Vind van elke kolom de langste waarde
-            string[] dummyvals = Enumerable.Repeat("", _loadedColumns.Length).ToArray();
-            for (int i = 0; i < _loadedColumns.Length; i++)
-            {
-                string longest = (from item in _loadedRows select i < item.Length ? item[i] : "").Aggregate("", (max, cur) => max.Length > cur.Length ? max : cur);
-                //longest = new string('#', longest.Length);
-                dummyvals[i] = longest;
-            }
-
-            // Voeg een dummy record toe
-            dataGridView1.VirtualMode = false;
-            dataGridView1.Rows.Add(dummyvals);
-
-            // Autosize alle kolommen
-            dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
-
-            // Breedtes van kolommen vastzetten
-            foreach (DataGridViewColumn column in dataGridView1.Columns)
-            {
-                int width = column.Width + 15; // Compensate character width a little, so we don't get "..." on the slightest difference
-                if (width > 65536)
-                    width = 65536;
-                column.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-                column.Width = width;
-            }
-
-            // Haal de autosize weer weg
-            dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
 
             // Rowcount goed zetten
             dataGridView1.Rows.Clear();

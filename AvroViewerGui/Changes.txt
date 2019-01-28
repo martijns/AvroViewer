@@ -1,4 +1,13 @@
-﻿2018-07-23:
+﻿2018-10-11:
+- Recursively handle AvroRecord objects
+
+2018-09-27:
+- Increased performance on many rows and many columns
+- Open files that are 'in use' (only if the other application has no exclusive lock)
+- Interrupting/aborting does not abort the whole process, but will render what it read thus far
+- Show filename in title
+
+2018-07-23:
 - Fix horizontal scrollbar being disabled after loading a file
 
 2018-06-26:
