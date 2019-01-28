@@ -725,5 +725,83 @@ namespace AvroViewerGui
             if (_initialFilename != null)
                 LoadFromFile(_initialFilename);
         }
+
+        private void HandleExportAllToJson(object sender, EventArgs e)
+        {
+            ExportToJson(dataGridView1.Rows.OfType<DataGridViewRow>());
+        }
+
+        private void HandleExportSelectionToJson(object sender, EventArgs e)
+        {
+            ExportToJson(dataGridView1.SelectedRows.OfType<DataGridViewRow>());
+        }
+
+        private void ExportToJson(IEnumerable<DataGridViewRow> rows)
+        {
+            // Minimum of 1 row?
+            if (rows.Count() == 0)
+            {
+                MessageBox.Show(this, "At least one row must be in the export.", "Yikes!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Find column index
+            var bodycolumn = rows.First().DataGridView.Columns.Cast<DataGridViewColumn>().FirstOrDefault(dgvc => dgvc.HeaderText.ToLower() == "body");
+            if (bodycolumn == null)
+            {
+                MessageBox.Show(this, "Cannot find column named \"Body\". This export was created with IoT Hub's .avro exported files in mind.", "Yikes!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Export as JSON array or objects?
+            var text = @"Do you want to export to JSON Array or new-line separated JSON Objects?
+
+Select ""YES"" (JSON array) for:
+[
+  { object },
+  { object }
+}
+
+Select ""NO"" (New-line separated JSON objects) for:
+{ object }
+{ object }
+
+Note that this export assumes the ""Body"" is a valid JSON object.";
+            var res = MessageBox.Show(this, text, "JSON Export Type?", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
+            if (res == DialogResult.Cancel)
+                return;
+
+            bool asJsonArray = res == DialogResult.Yes;
+
+            // Where to save
+            SaveFileDialog fdSaveAs = new SaveFileDialog();
+            fdSaveAs.InitialDirectory = "c:\\";
+            fdSaveAs.Filter = "json files (*.json)|*.json|All files (*.*)|*.*";
+            fdSaveAs.FilterIndex = 1;
+            fdSaveAs.RestoreDirectory = true;
+            if (fdSaveAs.ShowDialog() != DialogResult.OK)
+                return;
+
+            // Create outfile
+            using (StreamWriter outfile = new StreamWriter(fdSaveAs.FileName))
+            {
+                if (asJsonArray)
+                {
+                    outfile.WriteLine("[");
+                }
+                bool first = true;
+                foreach (var row in rows)
+                {
+                    if (asJsonArray && !first)
+                        outfile.Write(",");
+                    outfile.WriteLine(row.Cells[bodycolumn.Index].Value + "");
+                    first = false;
+                }
+                if (asJsonArray)
+                {
+                    outfile.WriteLine("]");
+                }
+            }
+        }
     }
 }

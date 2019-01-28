@@ -1,4 +1,7 @@
-﻿2018-10-11:
+﻿2019-01-28:
+- Added export to .json (specifically for IoT Hub generated .avro files) in either new-line separated or JSONArray format
+
+2018-10-11:
 - Recursively handle AvroRecord objects
 
 2018-09-27:

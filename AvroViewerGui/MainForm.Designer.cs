@@ -42,12 +42,14 @@
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.exportToCsvToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exportSelectionToCsvToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.copyAllToClipboardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.copySelectionToClipboardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportToCsvToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.copyAllToClipboardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportAllTojsonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportSelectionToCsvToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.copySelectionToClipboardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportSelectionTojsonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.changelogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.submitFeedbackToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -56,6 +58,7 @@
             this.lblStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripSplitButton1 = new System.Windows.Forms.ToolStripSplitButton();
             this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.ctxMenuPopup.SuspendLayout();
             this.mainPanel.SuspendLayout();
             this.resultPanel.SuspendLayout();
@@ -161,6 +164,7 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
+            this.exportToolStripMenuItem,
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -174,11 +178,6 @@
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openToolStripMenuItem,
             this.toolStripSeparator1,
-            this.exportToCsvToolStripMenuItem,
-            this.exportSelectionToCsvToolStripMenuItem,
-            this.copyAllToClipboardToolStripMenuItem,
-            this.copySelectionToClipboardToolStripMenuItem,
-            this.toolStripSeparator2,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
@@ -187,54 +186,77 @@
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
             this.openToolStripMenuItem.Text = "Open...";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.HandleOpenClicked);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(219, 6);
-            // 
-            // exportToCsvToolStripMenuItem
-            // 
-            this.exportToCsvToolStripMenuItem.Name = "exportToCsvToolStripMenuItem";
-            this.exportToCsvToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
-            this.exportToCsvToolStripMenuItem.Text = "Export All to csv";
-            this.exportToCsvToolStripMenuItem.Click += new System.EventHandler(this.exportToCsvToolStripMenuItem_Click);
-            // 
-            // exportSelectionToCsvToolStripMenuItem
-            // 
-            this.exportSelectionToCsvToolStripMenuItem.Name = "exportSelectionToCsvToolStripMenuItem";
-            this.exportSelectionToCsvToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
-            this.exportSelectionToCsvToolStripMenuItem.Text = "Export Selection to csv";
-            this.exportSelectionToCsvToolStripMenuItem.Click += new System.EventHandler(this.exportSelectionToCsvToolStripMenuItem_Click);
-            // 
-            // copyAllToClipboardToolStripMenuItem
-            // 
-            this.copyAllToClipboardToolStripMenuItem.Name = "copyAllToClipboardToolStripMenuItem";
-            this.copyAllToClipboardToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
-            this.copyAllToClipboardToolStripMenuItem.Text = "Copy All to Clipboard";
-            this.copyAllToClipboardToolStripMenuItem.Click += new System.EventHandler(this.copyAllToClipboardToolStripMenuItem_Click);
-            // 
-            // copySelectionToClipboardToolStripMenuItem
-            // 
-            this.copySelectionToClipboardToolStripMenuItem.Name = "copySelectionToClipboardToolStripMenuItem";
-            this.copySelectionToClipboardToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
-            this.copySelectionToClipboardToolStripMenuItem.Text = "Copy Selection to Clipboard";
-            this.copySelectionToClipboardToolStripMenuItem.Click += new System.EventHandler(this.copySelectionToClipboardToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(219, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(109, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.HandleExitClick);
+            // 
+            // exportToolStripMenuItem
+            // 
+            this.exportToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.exportToCsvToolStripMenuItem,
+            this.copyAllToClipboardToolStripMenuItem,
+            this.exportAllTojsonToolStripMenuItem,
+            this.toolStripSeparator2,
+            this.exportSelectionToCsvToolStripMenuItem,
+            this.copySelectionToClipboardToolStripMenuItem,
+            this.exportSelectionTojsonToolStripMenuItem});
+            this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
+            this.exportToolStripMenuItem.Text = "Export";
+            // 
+            // exportToCsvToolStripMenuItem
+            // 
+            this.exportToCsvToolStripMenuItem.Name = "exportToCsvToolStripMenuItem";
+            this.exportToCsvToolStripMenuItem.Size = new System.Drawing.Size(287, 22);
+            this.exportToCsvToolStripMenuItem.Text = "Export all to .csv";
+            this.exportToCsvToolStripMenuItem.Click += new System.EventHandler(this.exportToCsvToolStripMenuItem_Click);
+            // 
+            // copyAllToClipboardToolStripMenuItem
+            // 
+            this.copyAllToClipboardToolStripMenuItem.Name = "copyAllToClipboardToolStripMenuItem";
+            this.copyAllToClipboardToolStripMenuItem.Size = new System.Drawing.Size(287, 22);
+            this.copyAllToClipboardToolStripMenuItem.Text = "Export all to clipboard";
+            this.copyAllToClipboardToolStripMenuItem.Click += new System.EventHandler(this.copyAllToClipboardToolStripMenuItem_Click);
+            // 
+            // exportAllTojsonToolStripMenuItem
+            // 
+            this.exportAllTojsonToolStripMenuItem.Name = "exportAllTojsonToolStripMenuItem";
+            this.exportAllTojsonToolStripMenuItem.Size = new System.Drawing.Size(310, 22);
+            this.exportAllTojsonToolStripMenuItem.Text = "Export all to .json (body column only!)";
+            this.exportAllTojsonToolStripMenuItem.Click += new System.EventHandler(this.HandleExportAllToJson);
+            // 
+            // exportSelectionToCsvToolStripMenuItem
+            // 
+            this.exportSelectionToCsvToolStripMenuItem.Name = "exportSelectionToCsvToolStripMenuItem";
+            this.exportSelectionToCsvToolStripMenuItem.Size = new System.Drawing.Size(287, 22);
+            this.exportSelectionToCsvToolStripMenuItem.Text = "Export selection to .csv";
+            this.exportSelectionToCsvToolStripMenuItem.Click += new System.EventHandler(this.exportSelectionToCsvToolStripMenuItem_Click);
+            // 
+            // copySelectionToClipboardToolStripMenuItem
+            // 
+            this.copySelectionToClipboardToolStripMenuItem.Name = "copySelectionToClipboardToolStripMenuItem";
+            this.copySelectionToClipboardToolStripMenuItem.Size = new System.Drawing.Size(287, 22);
+            this.copySelectionToClipboardToolStripMenuItem.Text = "Export selection to clipboard";
+            this.copySelectionToClipboardToolStripMenuItem.Click += new System.EventHandler(this.copySelectionToClipboardToolStripMenuItem_Click);
+            // 
+            // exportSelectionTojsonToolStripMenuItem
+            // 
+            this.exportSelectionTojsonToolStripMenuItem.Name = "exportSelectionTojsonToolStripMenuItem";
+            this.exportSelectionTojsonToolStripMenuItem.Size = new System.Drawing.Size(310, 22);
+            this.exportSelectionTojsonToolStripMenuItem.Text = "Export selection to .json (body column only!)";
+            this.exportSelectionTojsonToolStripMenuItem.Click += new System.EventHandler(this.HandleExportSelectionToJson);
             // 
             // helpToolStripMenuItem
             // 
@@ -297,6 +319,11 @@
             this.toolStripSplitButton1.Text = "Stop loading";
             this.toolStripSplitButton1.ToolTipText = "Stop loading";
             this.toolStripSplitButton1.ButtonClick += new System.EventHandler(this.HandleAbortClicked);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(307, 6);
             // 
             // MainForm
             // 
@@ -361,8 +388,11 @@
         private System.Windows.Forms.ToolStripMenuItem submitFeedbackToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.BindingSource bindingSource1;
+        private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportAllTojsonToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportSelectionTojsonToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
     }
 }
 
