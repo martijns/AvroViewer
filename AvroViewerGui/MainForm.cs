@@ -15,6 +15,7 @@ using Microsoft.Hadoop.Avro.Schema;
 using Timer = System.Windows.Forms.Timer;
 using MsCommon.ClickOnce;
 using Newtonsoft.Json;
+using System.Text.RegularExpressions;
 
 namespace AvroViewerGui
 {
@@ -416,10 +417,16 @@ namespace AvroViewerGui
                 {
                     var columnname = _loadedColumns[i];
                     var longestcontent = (from item in _loadedRows select i < item.Length ? item[i] : "").Aggregate("", (max, cur) => max.Length > cur.Length ? max : cur);
-                    var colWidth = gfx.MeasureString(longestcontent, dataGridView1.Font);
+                    var cleantext = Regex.Replace(longestcontent, @"\p{C}+", string.Empty); // Remove non-printable characters that MeasureString would error on
+                    var colWidth = gfx.MeasureString(cleantext, dataGridView1.Font);
 
                     var size = (int) Math.Ceiling(colWidth.Width);
                     size += 20;
+
+                    // Force a maximum size for a column
+                    if (size > 5000)
+                        size = 5000;
+
                     var dgvc = new DataGridViewTextBoxColumn
                     {
                         FillWeight = 0.00001f,
